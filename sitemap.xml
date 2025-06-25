@@ -1,3 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://storage.cloud.google.com/pg-gccoe-josepablo-gallego-mkdocs-site/</loc>
+         <lastmod>2025-06-25</lastmod>
+    </url>
+    <url>
+         <loc>https://storage.cloud.google.com/pg-gccoe-josepablo-gallego-mkdocs-site/aaa/</loc>
+         <lastmod>2025-06-25</lastmod>
+    </url>
+    <url>
+         <loc>https://storage.cloud.google.com/pg-gccoe-josepablo-gallego-mkdocs-site/bbb/</loc>
+         <lastmod>2025-06-25</lastmod>
+    </url>
+    <url>
+         <loc>https://storage.cloud.google.com/pg-gccoe-josepablo-gallego-mkdocs-site/section/</loc>
+         <lastmod>2025-06-25</lastmod>
+    </url>
 </urlset>
