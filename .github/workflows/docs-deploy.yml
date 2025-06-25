@@ -36,15 +36,16 @@ jobs:
         run: mkdocs gh-deploy --force --clean # --clean elimina archivos antiguos antes de desplegar
                                              # --force fuerza el despliegue aunque no haya cambios detectados
 
-      #- name: Deploy to GitHub Pages (Legacy - for compatibility, if mkdocs gh-deploy doesn't trigger)
+      - name: Deploy to GitHub Pages (Legacy - for compatibility, if mkdocs gh-deploy doesn't trigger)
         # Esto es un paso de "seguridad" o un enfoque alternativo si el paso anterior no activa Pages directamente.
         # En configuraciones modernas de GitHub Pages (con "Source: GitHub Actions"),
         # el `mkdocs gh-deploy` ya debería ser suficiente.
         # Si tienes problemas, puedes intentar usar el action deploy-pages (ver nota abajo).
-        # uses: actions/upload-pages-artifact@v3
-        # with:
-        #   path: './site' # La carpeta donde MkDocs genera los archivos estáticos
-        # - name: Deploy to GitHub Pages
-        #   id: deployment
-        #   uses: actions/deploy-pages@v4
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './site' # La carpeta donde MkDocs genera los archivos estáticos
+          
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
         # Esto sería para un enfoque más "nativo" de GitHub Pages sin la dependencia de `gh-deploy`
