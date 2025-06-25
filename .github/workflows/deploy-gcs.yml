@@ -1,0 +1,57 @@
+name: Deploy MkDocs to GCS
+
+on:
+  push:
+    branches:
+      - master # O 'master'
+
+env:
+  PROJECT_ID: pg-gccoe-josepablo-gallego # Reemplaza con tu Project ID de GCP
+  BUCKET_NAME: pg-gccoe-josepablo-gallego-mkdocs-site # Reemplaza con el nombre de tu bucket de GCS
+  SERVICE_ACCOUNT_EMAIL: github-actions-deployer@pg-gccoe-josepablo-gallego.iam.gserviceaccount.com # Reemplaza
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # Solo necesita leer el código
+      id-token: write # Necesario para Workload Identity Federation
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/969325661804/locations/global/workloadIdentityPools/github-pool/providers/github-provider # Reemplaza PROJECT_NUMBER
+          service_account: ${{ env.SERVICE_ACCOUNT_EMAIL }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          pip install mkdocs
+          # pip install mkdocs-material # Descomenta si usas este tema
+          pip install -r requirements.txt # Si tienes un requirements.txt
+
+      - name: Build MkDocs site
+        run: mkdocs build # Genera el sitio estático en la carpeta 'site/'
+
+      - name: Upload site to Google Cloud Storage
+        uses: google-github-actions/upload-cloud-storage@v2
+        with:
+          path: './site' # La carpeta generada por mkdocs build
+          destination: ${{ env.BUCKET_NAME }}
+          parent: false # Para subir el contenido de 'site/' directamente al bucket, no una carpeta 'site' dentro
+
+      - name: Set GCS bucket permissions (Optional but Recommended for Public Websites)
+        run: |
+          gsutil -m acl ch -r -u AllUsers:R gs://${{ env.BUCKET_NAME }}
+        # Esto hace que todos los objetos en el bucket sean públicamente legibles.
+        # Solo úsalo si tu bucket está configurado como sitio web estático.
