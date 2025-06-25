@@ -3,7 +3,7 @@ name: Deploy Docs
 on:
   push:
     branches:
-      - main # O 'master' si esa es tu rama principal
+      - master # O 'master' si esa es tu rama principal
 
 jobs:
   deploy:
