@@ -1,0 +1,50 @@
+name: Deploy Docs
+
+on:
+  push:
+    branches:
+      - main # O 'master' si esa es tu rama principal
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Permite al workflow escribir en el repositorio (necesario para gh-pages)
+      pages: write    # Permite al workflow gestionar GitHub Pages
+      id-token: write # Necesario para la autenticación de OIDC si tu repositorio es público
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Esto es importante para el historial de gh-pages, especialmente si usas mkdocs gh-deploy
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x" # Usa la versión de Python que necesites (ej. "3.10", "3.11", "3.12")
+          cache: pip            # Cacha las dependencias de pip para acelerar futuras ejecuciones
+
+      - name: Install dependencies
+        run: |
+          pip install mkdocs # Instala MkDocs
+          # Si usas Material for MkDocs o plugins adicionales, descomenta la siguiente línea
+          # pip install mkdocs-material # o pip install -r requirements.txt
+          pip install -r requirements.txt # Instala todas las dependencias listadas en requirements.txt
+
+      - name: Build and deploy MkDocs
+        run: mkdocs gh-deploy --force --clean # --clean elimina archivos antiguos antes de desplegar
+                                             # --force fuerza el despliegue aunque no haya cambios detectados
+
+      #- name: Deploy to GitHub Pages (Legacy - for compatibility, if mkdocs gh-deploy doesn't trigger)
+        # Esto es un paso de "seguridad" o un enfoque alternativo si el paso anterior no activa Pages directamente.
+        # En configuraciones modernas de GitHub Pages (con "Source: GitHub Actions"),
+        # el `mkdocs gh-deploy` ya debería ser suficiente.
+        # Si tienes problemas, puedes intentar usar el action deploy-pages (ver nota abajo).
+        # uses: actions/upload-pages-artifact@v3
+        # with:
+        #   path: './site' # La carpeta donde MkDocs genera los archivos estáticos
+        # - name: Deploy to GitHub Pages
+        #   id: deployment
+        #   uses: actions/deploy-pages@v4
+        # Esto sería para un enfoque más "nativo" de GitHub Pages sin la dependencia de `gh-deploy`
